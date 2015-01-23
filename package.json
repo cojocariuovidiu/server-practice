@@ -1,0 +1,7 @@
+{
+  "name": "server-practice",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.11.1"
+  }
+}
