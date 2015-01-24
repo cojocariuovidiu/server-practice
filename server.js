@@ -76,10 +76,23 @@ apiRouter.post('/authenticate', function(req,res){
   });
 });
 
+// route middleware to verify token
 apiRouter.use(function(req,res,next){
-  console.log('someone looked at our api');
-  next();
-})
+  var token = req.body.token || req.params['token'] || req.headers['x-access-token'];
+
+  if (token){
+    jwt.verify(token, superSecret, function(err, decoded){
+      if (err){
+        return res.status(403).send({ success: false, message: 'Failed to authenticate token.' });
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  } else {
+    return res.status(403).send({ success: false, message: 'No token provided.' });
+  }
+});
 
 apiRouter.get('/', function(req,res){
   res.json({message: 'hooray welcome to our api'});
@@ -138,6 +151,11 @@ apiRouter.route('/users/:user_id')
       res.json({ message: 'Successfully deleted' });
     });
   });
+
+
+apiRouter.get('/me', function(req,res){
+  res.send(req.decoded);
+});
 
 app.use('/api', apiRouter);
 
