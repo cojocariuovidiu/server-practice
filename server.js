@@ -18,62 +18,35 @@
 ////////// NODE SERVER VIA EXPRESS //////////
 var express = require('express'),
     app = express(),
-    adminRouter = express.Router(),
-    mongoose = require('mongoose');
+    bodyParser = require('body-parser'),
+    morgan = require('morgan'),
+    mongoose = require('mongoose'),
+    port = process.env.PORT || 3000;
 
-mongoose.connect('mongodb://localhost/server-practice');
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
-// middleware - process req, validate parameters, etc
-adminRouter.use(function(req,res,next){
-  console.log(req.method, req.url);  
+app.use(function(req,res,next){
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, \ Authorization');
   next();
 });
 
-adminRouter.param('name', function(req,res,next,name){
-  // add validation logic
-  console.log('doing validations on ' + name);
-  req.name = name;
-  next();
-});
+app.use(morgan('dev'));
 
 app.get('/', function(req,res){
-  res.sendFile(__dirname + '/index.html');
+  res.send('Welcome to the homepage');
 });
 
+var apiRouter = express.Router();
 
-// admin routes organized under /admin
-adminRouter.get('/', function(req,res){
-  res.send('I am the dashboard!');
+apiRouter.get('/', function(req,res){
+  res.json({message: 'hooray welcome to our api'});
 });
 
-adminRouter.get('/users', function(req,res){
-  res.send('I show all the users!');
-});
+app.use('/api', apiRouter)
+;
 
-// route with parameter
-adminRouter.get('/users/:name', function(req,res){
-  res.send('hello ' + req.params.name + '!');
-});
-
-adminRouter.get('/posts', function(req,res){
-  res.send('I show all the posts!');
-});
-
-app.use('/admin', adminRouter);
-
-
-// login routes using .route instead of express.Router
-// cleaner way of writing out routes
-app.route('/login')
-  .get(function(req,res){
-    res.send('this is the login form');
-  })
-
-  .post(function(req,res){
-    console.log('processing');
-    res.send('processing the login form!');
-  });
-
-// server/port
-app.listen(3000);
-console.log('server is running on 3000');
+app.listen(port);
+console.log('server is running on port ' + port);
