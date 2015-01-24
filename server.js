@@ -46,10 +46,31 @@ app.get('/', function(req,res){
 });
 
 
+apiRouter.use(function(req,res,next){
+  console.log('someone looked at our api');
+  next();
+})
 
 apiRouter.get('/', function(req,res){
   res.json({message: 'hooray welcome to our api'});
 });
+
+apiRouter.route('/users')
+  .post(function(req,res){
+    var user = new User();
+    user.name = req.body.name;
+    user.username = req.body.username;
+    user.password = req.body.password;
+    user.save(function(err){
+      if (err){
+        if (err.code == 11000)
+          return res.json({ success: false, message: 'A user with that username already exists.'});
+        else
+          return res.send(err);
+      }
+      res.json({ message: 'User created!' });
+    });
+  });
 
 app.use('/api', apiRouter);
 
