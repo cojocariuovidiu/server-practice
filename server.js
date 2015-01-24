@@ -18,7 +18,10 @@
 ////////// NODE SERVER VIA EXPRESS //////////
 var express = require('express'),
     app = express(),
-    adminRouter = express.Router();
+    adminRouter = express.Router(),
+    mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/server-practice');
 
 // middleware - process req, validate parameters, etc
 adminRouter.use(function(req,res,next){
