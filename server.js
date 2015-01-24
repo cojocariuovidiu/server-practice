@@ -21,10 +21,14 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
     mongoose = require('mongoose'),
-    port = process.env.PORT || 3000;
+    port = process.env.PORT || 3000,
+    apiRouter = express.Router(),
+    User = require('./models/user');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+mongoose.connect('mongodb://localhost/server-practice');
 
 app.use(function(req,res,next){
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,18 +39,22 @@ app.use(function(req,res,next){
 
 app.use(morgan('dev'));
 
+
+
 app.get('/', function(req,res){
   res.send('Welcome to the homepage');
 });
 
-var apiRouter = express.Router();
+
 
 apiRouter.get('/', function(req,res){
   res.json({message: 'hooray welcome to our api'});
 });
 
-app.use('/api', apiRouter)
-;
+app.use('/api', apiRouter);
+
+
+
 
 app.listen(port);
 console.log('server is running on port ' + port);
