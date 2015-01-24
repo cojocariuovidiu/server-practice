@@ -70,6 +70,13 @@ apiRouter.route('/users')
       }
       res.json({ message: 'User created!' });
     });
+  })
+
+  .get(function(req,res){
+    User.find(function(err,users){
+      if (err) res.send(err);
+      res.json(users);
+    });
   });
 
 app.use('/api', apiRouter);
