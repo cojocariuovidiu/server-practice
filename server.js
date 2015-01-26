@@ -21,14 +21,15 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
     mongoose = require('mongoose'),
-    port = process.env.PORT || 3000,
+    config = require('./config'),
     apiRouter = express.Router(),
-    User = require('./models/user');
+    jwt = require('jsonwebtoken'),
+    User = require('./app/models/user');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost/server-practice');
+mongoose.connect(config.database);
 
 app.use(function(req,res,next){
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -45,8 +46,6 @@ app.get('/', function(req,res){
   res.send('Welcome to the homepage');
 });
 
-var jwt = require('jsonwebtoken');
-var superSecret = 'wowlookasecret';
 apiRouter.post('/authenticate', function(req,res){
   User.findOne({
     username: req.body.username
@@ -162,5 +161,5 @@ app.use('/api', apiRouter);
 
 
 
-app.listen(port);
-console.log('server is running on port ' + port);
+app.listen(config.port);
+console.log('server is running on port ' + config.port);
