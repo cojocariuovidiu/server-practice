@@ -8,11 +8,12 @@ angular.module('authService', [])
   // make request to node api, if true will return successful callback
   authFactory.login = function(username, password){
     return $http.post('/api/authenticate', {
-      username: username.
+      username: username,
       password: password
     })
     .success(function(data){
       AuthToken.setToken(data.token);
+      return data;
     });
   };
 
@@ -57,7 +58,7 @@ angular.module('authService', [])
 })
 
 // auth interceptor; handles attaching token to HTTP requests, redirects if not logged in
-.factory('AuthInterception', function($q, AuthToken){
+.factory('AuthInterceptor', function($q, $location, AuthToken){
   var interceptorFactory = {};
 
   interceptorFactory.request = function(config){
